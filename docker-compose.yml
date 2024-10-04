@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+   
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: pw123
+      MYSQL_DATABASE: todo_client
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pw123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./todo_db.sql:/docker-entrypoint-initdb.d/todo_db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-pmysql"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    
